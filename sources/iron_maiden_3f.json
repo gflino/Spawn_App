@@ -1,0 +1,11 @@
+{
+    "game_version": "Iron_Maiden_3F",
+    "analysis_date": "2025-10-15 00:44:47",
+    "theme": "Unknown",
+    "is_base_game": false,
+    "special_spawns": {
+        "abominations": [],
+        "necromancers": []
+    },
+    "spawn_data": {}
+}

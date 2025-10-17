@@ -1,0 +1,162 @@
+#:kivy 2.1.0
+
+# --- CORREÇÃO: REMOVIDAS TODAS AS DEFINIÇÕES DE CLASSE DAQUI ---
+# A definição do comportamento de 'ClickableFloatLayout', etc.
+# está agora no ficheiro .py, onde deve estar. O ficheiro .kv apenas
+# USA os widgets que foram definidos em Python.
+
+<ThemeSelectScreen>:
+    name: 'theme_select'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+        Label:
+            text: 'Select a Game Theme'
+            font_size: '28sp'
+            bold: True
+            size_hint_y: 0.2
+        
+        GridLayout:
+            cols: 2
+            spacing: 15
+            Button:
+                text: 'Modern'
+                disabled: True
+            Button:
+                text: 'Fantasy'
+                on_press: app.select_theme('Fantasy')
+            Button:
+                text: 'Sci-Fi'
+                disabled: True
+            Button:
+                text: 'Western'
+                disabled: True
+            Button:
+                text: 'Superheroes'
+                disabled: True
+            Button:
+                text: 'Others'
+                disabled: True
+
+<BaseGameSelectScreen>:
+    name: 'base_game_select'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        Label:
+            text: 'Select Base Game(s)'
+            font_size: '24sp'
+            size_hint_y: None
+            height: '40dp'
+        ScrollView:
+            GridLayout:
+                id: options_grid
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+        
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            Button:
+                text: '< Back'
+                on_press: app.sm.current = 'theme_select'
+            Button:
+                id: next_button
+                text: 'Next >'
+                disabled: True
+                on_press: app.sm.current = 'expansion_select'
+
+<ExpansionSelectScreen>:
+    name: 'expansion_select'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        Label:
+            text: 'Select Expansion(s)'
+            font_size: '24sp'
+            size_hint_y: None
+            height: '40dp'
+        ScrollView:
+            GridLayout:
+                id: options_grid
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+        
+        BoxLayout:
+            size_hint_y: None
+            height: '48dp'
+            Button:
+                text: '< Back'
+                on_press: app.sm.current = 'base_game_select'
+            Button:
+                text: 'Start Game'
+                on_press: app.start_game()
+
+
+<MainGameScreen>:
+    name: 'main_game'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 5
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '48dp'
+            Button:
+                text: '< Menu'
+                size_hint_x: None
+                width: '100dp'
+                on_press: app.go_to_theme_select()
+            BoxLayout:
+                id: danger_selectors_container
+
+        ClickableFloatLayout:
+            id: spawn_image_button
+            disabled: True
+            on_press: root.draw_spawn()
+
+            Image:
+                id: spawn_image
+                source: 'images/placeholder.jpeg'
+                allow_stretch: True
+                keep_ratio: False
+                size_hint: 1, 1
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            Label:
+                id: overlay_label
+                text: ''
+                font_size: '40sp'
+                bold: True
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.size
+            
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: '70dp'
+            spacing: 5
+
+            Label:
+                id: result_label
+                text: 'Select theme to start...'
+                font_size: '24sp'
+                bold: True
+
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                Label:
+                    id: spawn_counter_label
+                    text: 'Spawn: 0'
+                    size_hint_x: None
+                    width: '120dp'
+
