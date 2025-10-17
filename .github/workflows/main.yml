@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: 0   # 🚫 Desativa o BuildKit (corrige o erro de mídia)
+      BUILDKIT_PROGRESS: plain
 
     steps:
       # 1️⃣ Baixa o repositório
@@ -21,12 +24,14 @@ jobs:
       # 3️⃣ Constrói o APK dentro do container oficial do Buildozer
       - name: Build with Buildozer (Docker)
         run: |
-          docker run --rm -v "$(pwd)":/home/user/app kivy/buildozer buildozer android debug
-
+          docker run --rm \
+            -v "$(pwd)":/home/user/app \
+            kivy/buildozer \
+            buildozer android debug
 
       # 4️⃣ Publica o APK gerado
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SpawnMGR-apk
-          path: Spawn_App/bin/*.apk
+          path: bin/*.apk
