@@ -45,21 +45,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install --user cython==0.29.36 buildozer "kivy[base]" pandas
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+      
+      # Passo 6 (DEPURAÇÃO): Lista todos os ficheiros para confirmar a estrutura
+      - name: List files in repository
+        run: ls -R
 
-      # Passo 6: Executa o Buildozer
+      # Passo 7: Executa o Buildozer
       - name: Build with Buildozer
         run: |
-          # CORREÇÃO FINAL: O erro "No such file or directory" mostra que a pasta "Spawn_App" não existe na raiz.
-          # Removemos o comando "cd" e executamos o buildozer diretamente da raiz do repositório,
-          # onde o seu ficheiro buildozer.spec deve estar.
+          # Executa os comandos a partir da raiz do repositório, onde o buildozer.spec está.
           buildozer android clean
           buildozer -v android debug
 
-      # Passo 7: Guarda o .apk resultante
+      # Passo 8: Guarda o .apk resultante
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: zbc-spawner-apk
-          # O caminho para o artefacto continua correto, pois a pasta 'bin' será criada na raiz.
+          # O caminho para o artefacto é relativo à raiz do repositório
           path: bin/*.apk
 
