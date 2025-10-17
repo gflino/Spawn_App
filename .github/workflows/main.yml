@@ -52,9 +52,9 @@ jobs:
 
       # Passo 7: Executa o Buildozer
       - name: Build with Buildozer
-        # CORREÇÃO FINAL: Força a execução dentro da sua pasta de projeto
-        working-directory: ./Spawn_App
         run: |
+          # CORREÇÃO FINAL: Entra no diretório do projeto antes de executar os comandos
+          cd Spawn_App
           buildozer android clean
           buildozer -v android debug
 
@@ -63,6 +63,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zbc-spawner-apk
-          # O caminho para o artefacto é relativo à pasta onde o build foi executado
+          # O caminho para o artefacto é relativo à raiz do repositório
           path: Spawn_App/bin/*.apk
 
