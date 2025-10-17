@@ -1,60 +1,83 @@
 [buildozer]
-# (int) Nível de log (2 para debug)
+# Nível de log (2 para debug detalhado)
 log_level = 2
-# (bool) Aceitar a licença do SDK automaticamente
+
+# Aceitar automaticamente as licenças do SDK Android
 android.accept_sdk_license = True
-# (int) Avisar se o buildozer for executado como root
+
+# Evita avisos sobre execução como root (útil em containers e CI)
 warn_on_root = 0
 
+# Modo silencioso de atualização
+builddir = .buildozer
+bin_dir = bin
+
 [app]
-# (str) Título da sua aplicação
+# Nome do app
 title = SpawnMGR
 
-# (str) Nome do pacote (sem espaços ou caracteres especiais)
+# Nome do pacote
 package.name = spawnmgr
 
-# (str) Domínio do pacote (formato reverso)
+# Domínio reverso
 package.domain = org.lino.zbc
 
-# (str) Pasta do código-fonte ('.' significa a pasta atual)
+# Diretório do código-fonte
 source.dir = .
 
-# (list) Extensões de ficheiros a incluir
-source.include_exts = py,png,jpg,jpeg,kv,json
+# Extensões incluídas
+source.include_exts = py,kv,png,jpg,jpeg,json
 
-# (list) Pastas a excluir do pacote
-source.exclude_dirs = tests, bin, venv*, .venv*
+# Pastas a excluir do build
+source.exclude_dirs = tests, venv, .venv, __pycache__, .git, bin
 
-# (str) Versão da aplicação
-version = 0.1
+# Versão
+version = 0.1.0
 
-# (list) Requisitos da aplicação (apenas bibliotecas Python)
-requirements = python3,kivy,pandas
+# Requisitos Python
+# Mantemos apenas o essencial — Kivy e pandas
+requirements = python3,kivy==2.3.0,pandas
 
-# (str) Orientação suportada
+# Orientação
 orientation = portrait
 
-# (str) Ícone da aplicação (o caminho é relativo à source.dir)
+# Ícone (opcional, mas ajuda a evitar erros)
 icon.filename = icon.png
 
-# (list) Permissões Android
+# Permissões Android (adicione aqui se o app precisar)
 android.permissions = 
 
-# (str) A arquitetura Android para a qual compilar
+# Arquiteturas Android
 android.archs = arm64-v8a
 
-# (int) API Android a usar
+# API do Android
 android.api = 31
-
-# (int) API mínima requerida
 android.minapi = 21
 
-# (str) Versão do NDK
+# Versão do NDK
 android.ndk_version = 25b
 
-# (bool) Suporte a backup automático
+# Opções de build
 android.allow_backup = True
-
-# (int) Ecrã inteiro (0 para não, 1 para sim)
 fullscreen = 0
 
+# Nome do pacote de saída
+package.filename = SpawnMGR-${version}
+
+# Desativa depuração no release (importante se for gerar release depois)
+android.release_artifact = True
+
+# Inclui cache de compilação
+use_cache = True
+
+# Define uma pasta de cache mais previsível (útil em CI)
+android.p4a_dir = .buildozer/android/platform/python-for-android
+
+# Evita falhas por ausência de SDK
+android.sdk_path = $HOME/.buildozer/android/platform/android-sdk
+
+# Evita falhas por ausência de NDK
+android.ndk_path = $HOME/.buildozer/android/platform/android-ndk
+
+# Define o compilador (mais estável)
+android.ndk_api = 21
