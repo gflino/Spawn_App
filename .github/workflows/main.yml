@@ -1,36 +1,81 @@
-name: Build Kivy APK with Buildozer (Docker)
+# Nome do nosso fluxo de trabalho
+name: Build Zombicide Spawner APK
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-android:
+    name: Build for Android
+    # Usamos a versão estável do Ubuntu (22.04) para máxima compatibilidade
+    runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
+      # Passo 1: Descarrega o seu código do GitHub para a máquina virtual
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python (for pre-steps only)
+      # Passo 2: Configura o Java (JDK 17), que é um requisito do Gradle
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Passo 3: Configura o Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
+      
+      # Passo 4: Instala a lista "à prova de tudo" de dependências de sistema
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git \
+            zip \
+            unzip \
+            build-essential \
+            autoconf \
+            automake \
+            libtool \
+            libtool-bin \
+            pkg-config \
+            libffi-dev \
+            libssl-dev \
+            gettext \
+            ccache \
+            libncurses5-dev \
+            libncursesw5-dev \
+            cmake \
+            libsqlite3-dev \
+            libbz2-dev \
+            libatlas-base-dev \
+            lzip
 
-      - name: Install dependencies
+      # Passo 5: Instala as dependências Python
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install Cython virtualenv
+          # Instala as bibliotecas no diretório do usuário para evitar problemas de permissão
+          pip install --user cython==0.29.36 buildozer "kivy[base]" pandas
+          # Adiciona o diretório de instalação do usuário ao PATH para que o 'buildozer' seja encontrado
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Build APK using Buildozer Docker
+      # Passo 6: Executa o Buildozer
+      - name: Build with Buildozer
+        # Define o diretório de trabalho para a pasta da sua aplicação
+        working-directory: ./Spawn_App
         run: |
-          cd Spawn_App
-          docker run --rm -v "$(pwd)":/home/user/app kivy/buildozer buildozer android debug
+          buildozer android clean
+          buildozer -v android debug
 
-      - name: Upload APK as artifact
+      # Passo 7: Guarda o .apk resultante
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Spawn_App_APK
+          name: zbc-spawner-apk
+          # Ajusta o caminho para o artefacto
           path: Spawn_App/bin/*.apk
