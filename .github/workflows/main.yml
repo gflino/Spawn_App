@@ -34,41 +34,23 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git \
-            zip \
-            unzip \
-            build-essential \
-            autoconf \
-            automake \
-            libtool \
-            libtool-bin \
-            pkg-config \
-            libffi-dev \
-            libssl-dev \
-            gettext \
-            ccache \
-            libncurses5-dev \
-            libncursesw5-dev \
-            cmake \
-            libsqlite3-dev \
-            libbz2-dev \
-            libatlas-base-dev \
-            lzip
+            git zip unzip build-essential autoconf libtool pkg-config \
+            libffi-dev libssl-dev gettext ccache automake \
+            libncurses5-dev libncursesw5-dev libtool-bin cmake \
+            libsqlite3-dev libbz2-dev libatlas-base-dev lzip
 
       # Passo 5: Instala as dependências Python
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          # Instala as bibliotecas no diretório do usuário para evitar problemas de permissão
           pip install --user cython==0.29.36 buildozer "kivy[base]" pandas
-          # Adiciona o diretório de instalação do usuário ao PATH para que o 'buildozer' seja encontrado
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       # Passo 6: Executa o Buildozer
       - name: Build with Buildozer
-        # Define o diretório de trabalho para a pasta da sua aplicação
-        working-directory: ./Spawn_App
         run: |
+          # CORREÇÃO FINAL: Entra no diretório correto antes de executar os comandos
+          cd Spawn_App
           buildozer android clean
           buildozer -v android debug
 
@@ -77,5 +59,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zbc-spawner-apk
-          # Ajusta o caminho para o artefacto
+          # O caminho para o artefacto continua correto, pois é relativo à raiz do repositório
           path: Spawn_App/bin/*.apk
+
