@@ -49,8 +49,9 @@ jobs:
       # Passo 6: Executa o Buildozer
       - name: Build with Buildozer
         run: |
-          # CORREÇÃO FINAL: Entra no diretório correto antes de executar os comandos
-          cd Spawn_App
+          # CORREÇÃO FINAL: O erro "No such file or directory" mostra que a pasta "Spawn_App" não existe na raiz.
+          # Removemos o comando "cd" e executamos o buildozer diretamente da raiz do repositório,
+          # onde o seu ficheiro buildozer.spec deve estar.
           buildozer android clean
           buildozer -v android debug
 
@@ -59,6 +60,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zbc-spawner-apk
-          # O caminho para o artefacto continua correto, pois é relativo à raiz do repositório
-          path: Spawn_App/bin/*.apk
+          # O caminho para o artefacto continua correto, pois a pasta 'bin' será criada na raiz.
+          path: bin/*.apk
 
