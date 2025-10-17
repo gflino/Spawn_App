@@ -1,1 +1,66 @@
+# Nome do nosso fluxo de trabalho
+name: Build Zombicide Spawner APK
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-android:
+    name: Build for Android
+    # Usamos a versão estável do Ubuntu (22.04) para máxima compatibilidade
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Passo 1: Descarrega o seu código do GitHub para a máquina virtual
       - name: Checkout
+        uses: actions/checkout@v4
+
+      # Passo 2: Configura o Java (JDK 17), que é um requisito do Gradle
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Passo 3: Configura o Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      # Passo 4: Instala a lista "à prova de tudo" de dependências de sistema
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip build-essential autoconf libtool pkg-config \
+            libffi-dev libssl-dev gettext ccache automake \
+            libncurses5-dev libncursesw5-dev libtool-bin cmake \
+            libsqlite3-dev libbz2-dev libatlas-base-dev lzip
+
+      # Passo 5: Instala as dependências Python
+      - name: Install Python dependencies
+        # CORREÇÃO: Executa este passo a partir da pasta correta
+        working-directory: ./Spawn_App
+        run: |
+          python -m pip install --upgrade pip
+          pip install --user cython==0.29.36 buildozer "kivy[base]" pandas
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # Passo 6: Executa o Buildozer
+      - name: Build with Buildozer
+        # CORREÇÃO: Define o diretório de trabalho para a pasta da sua aplicação
+        working-directory: ./Spawn_App
+        run: |
+          buildozer android clean
+          buildozer -v android debug
+
+      # Passo 7: Guarda o .apk resultante
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zbc-spawner-apk
+          # O caminho para o artefacto é relativo à pasta da aplicação
+          path: Spawn_App/bin/*.apk
+
